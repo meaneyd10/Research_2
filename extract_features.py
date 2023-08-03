@@ -6,8 +6,8 @@ from tensorflow.keras.applications import xception
 from PIL import Image
 
 # Path to folders with image data
-train_path = Path("C:/Users/gizem/OneDrive/Belgeler/Fungi Images/Training Dataset") 
-test_path = Path("C:/Users/gizem/OneDrive/Belgeler/Fungi Images/Test Dataset") 
+train_path = Path("/usr/src/myapp/Training_Dataset")
+test_path = Path("/usr/src/myapp/Test_Dataset")
 
 images = []
 labels = []

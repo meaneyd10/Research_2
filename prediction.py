@@ -9,24 +9,24 @@ from keras.models import model_from_json
 from pathlib import Path
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications import xception
-from tensorflow.keras.layers import GlobalAveragePooling2D, Reshape
 import numpy as np
 
 # Load the json file that contains the model's structure
-f = Path("C:/Users/gizem/Masaüstü/Thesis Codes/model_structure.json")
+f = Path("/usr/src/myapp/model_structure_2.json")
 model_structure = f.read_text()
 
 # Recreate the Keras model object from the json data
 model = model_from_json(model_structure)
 
 # Re-load the model's trained weights
-model.load_weights("C:/Users/gizem/Masaüstü/Thesis Codes/model_weights.h5")
+model.load_weights("/usr/src/myapp/model_weights_2.h5")
 
-# Print the model summary to identify the correct layer name or index
+# Print the summary of the loaded model
 model.summary()
 
 # Load an image file to test, resizing it to the input shape of the model
-img_path = "C:/Users/gizem/OneDrive/Belgeler/Fungi Images/Test Dataset/RST-A02-003-04-0014.jpg"
+#img_path = "/usr/src/myapp/Test_Dataset/RST-A02-003-04-0014.jpg"
+img_path = "/usr/src/myapp/Training_Dataset/AFU-A01-002-04-0001.jpg"
 img = image.load_img(img_path, target_size=(299, 299))
 
 # Convert the image to a numpy array
@@ -42,21 +42,20 @@ images = xception.preprocess_input(images)
 feature_extraction_model = xception.Xception(weights='imagenet', include_top=False, input_shape=(299, 299, 3))
 features = feature_extraction_model.predict(images)
 
-# Resize the features to match the expected input shape of the model
-resized_features = GlobalAveragePooling2D()(features)
-resized_features = Reshape((2, 2, 512))(resized_features)  # Modify the shape to match the expected input shape
+# Flatten the features to a 1D array before passing to the loaded model
+flattened_features = features.reshape(1, -1)  # Reshape (1, 10, 10, 2048) to (1, 10*10*2048)
 
-# Given the resized features, make a final prediction using our own model
-results = model.predict(resized_features)
+# Given the flattened features, make a final prediction using the loaded model
+results = model.predict(flattened_features)
 
 # Since we are only testing one image with a possible class, we only need to check the first result's first element
 single_result = results[0][0]
 
 # Print the result
-print("Likelihood that this image contains a Aspergillus Fumigatus: {}%".format(int(single_result * 100)))
+print("Likelihood that this image contains Aspergillus Fumigatus: {}%".format(int(single_result * 100)))
 
 # Save the result to a file
-output_directory = "C:/Users/gizem/Masaüstü/Thesis Codes"
-output_file = Path(output_directory) / "prediction.txt"
+output_directory = "/usr/src/myapp"
+output_file = Path(output_directory) / "prediction_2.txt"
 with open(output_file, "w") as file:
     file.write("Likelihood that this image contains Aspergillus Fumigatus: {}%".format(int(single_result * 100)))
