@@ -1,0 +1,5 @@
+numpy
+joblib
+tensorflow
+Image
+scikit-lear
